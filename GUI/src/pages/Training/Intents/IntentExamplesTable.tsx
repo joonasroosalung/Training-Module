@@ -71,6 +71,19 @@ const IntentExamplesTable: FC<IntentExamplesTableProps> = ({
     setEditableRow(null);
   });
 
+  const handleSetExampleText = (example: string, editExample = false) => {
+    const formattedExample = example.replace(/([\t\n])+/g, ' ').replace(/([\\/#{}\[\]])+/g, '').trim();
+
+    setExampleText(formattedExample);
+    if (editExample) {
+      exampleEditMutation.mutate({
+        intentName: selectedIntent.id,
+        oldExample: editableRow!.value,
+        newExample: formattedExample,
+      })
+    }
+  }
+
   const handleEditableRow = (example: { intentName: string; value: string }) => {
     setEditableRow(example);
   };
@@ -208,12 +221,7 @@ const IntentExamplesTable: FC<IntentExamplesTableProps> = ({
             if(!editableRow)
               return;
             setOldExampleText(editableRow.value);
-            setExampleText(updatedExampleTitle.trim());
-              exampleEditMutation.mutate({
-                intentName: selectedIntent.id,
-                oldExample: editableRow.value,
-                newExample: updatedExampleTitle.trim(),
-              })
+            handleSetExampleText(updatedExampleTitle, true);
           },
           () => handleEditableRow({
             intentName: props.row.original.id,
@@ -258,7 +266,7 @@ const IntentExamplesTable: FC<IntentExamplesTableProps> = ({
                 hideLabel
                 maxLength={INTENT_EXAMPLE_LENGTH}
                 showMaxLength
-                onChange={(e) => setExampleText(e.target.value)}
+                onChange={(e) => handleSetExampleText(e.target.value)}
                 disableHeightResize
               />
             </td>

@@ -212,8 +212,6 @@ const CommonIntents: FC = () => {
       });
     },
     onSettled: () => {
-      console.debug('deleteIntentMutation selectedIntent')
-      console.debug(selectedIntent)
       commonIntents = commonIntents.filter(
         (intent) => intent.id !== selectedIntent?.id
       );

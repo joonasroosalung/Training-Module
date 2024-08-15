@@ -34,7 +34,7 @@ import withAuthorization, { ROLES } from 'hoc/with-authorization';
 import { isHiddenFeaturesEnabled, RESPONSE_TEXT_LENGTH } from 'constants/config';
 import { deleteResponse, editResponse } from '../../../services/responses';
 import { Rule, RuleDTO } from '../../../types/rule';
-import { addStoryOrRule, deleteStoryOrRule, editStoryOrRule } from '../../../services/stories';
+import { addStoryOrRule, deleteStoryOrRule } from '../../../services/stories';
 
 type Response = {
   name: string;
@@ -147,8 +147,8 @@ const Intents: FC = () => {
       setIntentResponseText(null);
       setIntentRule(null);
 
+      setRefreshing(false);
       queryClient.fetchQuery(['intents/full']).then((res: any) => {
-        setRefreshing(false);
 
         if (intents.length > 0) {
           const newSelectedIntent = res.response.intents.find((intent: any) => intent.title === selectIntent) || null;
@@ -480,7 +480,7 @@ const Intents: FC = () => {
     addExamplesMutation.mutate({
       intentName: selectedIntent.id,
       intentExamples: selectedIntent.examples,
-      newExamples: example.replace(/(\t|\n)+/g, ' ').trim(),
+      newExamples: example.replace(/([\t\n])+/g, ' ').replace(/([\\/#{}\[\]])+/g, '').trim(),
     });
   };
 
